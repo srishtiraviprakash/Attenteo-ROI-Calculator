@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attenteo ROI Calculator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #2c7ed0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 30px;
+    }
+    .calculator-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgb(167, 210, 248);
+      padding: 40px;
+      max-width: 850px;
+      margin: auto;
+    }
+    h2 {
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #324d82;
+    }
+    .form-label {
+      font-weight: 600;
+    }
+    input:focus {
+      border-color: #123b67;
+      box-shadow: 0 0 0 0.1rem rgba(0, 98, 204, 0.25);
+    }
+    #result {
+      margin-top: 40px;
+      padding: 30px;
+      background: #e7f0ff;
+      border-left: 5px solid #4a90e2;
+      border-radius: 10px;
+    }
+    #result p {
+      font-size: 1.05rem;
+      margin-bottom: 12px;
+    }
+    #result strong {
+      color: #1f3b5b;
+    }
+    .btn-primary {
+      background-color: #4a90e2;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #357abd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-container">
+    <h2>Attenteo ROI Calculator</h2>
+
+    <div class="row g-4">
+      <div class="col-md-6">
+        <label class="form-label">Number of Clinic Locations</label>
+        <input type="number" class="form-control" id="num_locations">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Clinic Lead Hourly Cost ($)</label>
+        <input type="number" class="form-control" id="clinic_lead_hourly">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Regional Manager Count</label>
+        <input type="number" class="form-control" id="regional_mgr_count">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Regional Manager Hourly Cost ($)</label>
+        <input type="number" class="form-control" id="regional_mgr_hourly">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Locations Per Manager</label>
+        <input type="number" class="form-control" id="locations_per_leader">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Average Drive Distance (miles)</label>
+        <input type="number" class="form-control" id="drive_distance">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">New Launches Per Month</label>
+        <input type="number" class="form-control" id="launches_per_month">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Revenue Per Visit ($)</label>
+        <input type="number" class="form-control" id="revenue_per_visit">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Average Daily Volume Per Clinic</label>
+        <input type="number" class="form-control" id="avg_volume">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Fleet-Wide Annual Patient Volume</label>
+        <input type="number" class="form-control" id="fleet_volume">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Compliance Manager Annual Salary ($)</label>
+        <input type="number" class="form-control" id="compliance_salary">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Supply Cost Per Visit ($)</label>
+        <input type="number" class="form-control" id="supply_cost">
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button id="calculate" class="btn btn-primary btn-lg">Calculate ROI</button>
+    </div>
+
+    <div id="result" class="mt-4 d-none"></div>
+  </div>
+
+  <script>
+    $('#calculate').click(function () {
+      const n = id => parseFloat($('#' + id).val()) || 0;
+
+      const num_locations = n("num_locations");
+      const clinic_lead_hourly = n("clinic_lead_hourly");
+      const regional_mgr_count = n("regional_mgr_count");
+      const regional_mgr_hourly = n("regional_mgr_hourly");
+      const locations_per_leader = n("locations_per_leader") || 1;
+      const drive_distance = n("drive_distance");
+      const launches_per_month = n("launches_per_month");
+      const revenue_per_visit = n("revenue_per_visit");
+      const avg_volume = n("avg_volume");
+      const fleet_volume = n("fleet_volume");
+      const compliance_salary = n("compliance_salary");
+      const supply_cost = n("supply_cost");
+
+      const compliance_savings = compliance_salary * 0.5;
+      const regional_mgr_hours_saved = (num_locations / locations_per_leader) * 8 * 12;
+      const regional_mgr_savings = regional_mgr_hours_saved * regional_mgr_hourly;
+      const hr_savings_launch = compliance_savings;
+      const travel_miles = drive_distance * locations_per_leader * 12;
+      const travel_cost = travel_miles * 0.655;
+      const travel_savings = travel_cost;
+      const launch_hours_saved = launches_per_month * 12 * 10;
+      const launch_savings = launch_hours_saved * clinic_lead_hourly;
+      const supply_savings = fleet_volume * supply_cost * 0.1;
+
+      const hard_savings_total = travel_savings + compliance_savings + hr_savings_launch;
+      const total_savings = compliance_savings + regional_mgr_savings + travel_savings + launch_savings + supply_savings + hr_savings_launch;
+
+      $('#result').removeClass('d-none').html(`
+        <h4>📊 Estimated Annual Savings</h4>
+        <p><strong>💼 Compliance Manager Savings:</strong> $${compliance_savings.toFixed(2)}</p>
+        <p><strong>🧑‍💼 HR Savings from New Launches:</strong> $${hr_savings_launch.toFixed(2)}</p>
+        <p><strong>🚗 Travel Savings:</strong> $${travel_savings.toFixed(2)}</p>
+        <p><strong>👥 Regional Oversight Savings:</strong> $${regional_mgr_savings.toFixed(2)}</p>
+        <p><strong>🚀 Launch Efficiency Savings:</strong> $${launch_savings.toFixed(2)}</p>
+        <p><strong>📦 Supply Waste Reduction:</strong> $${supply_savings.toFixed(2)}</p>
+        <hr>
+        <p><strong>📊 Total Hard ROI Savings:</strong> <span style="color: #0d6efd;">$${hard_savings_total.toFixed(2)}</span></p>
+        <p style="font-size: 1.2rem;"><strong>💰 Total Estimated Annual Savings:</strong> <span style="color: green;">$${total_savings.toFixed(2)}</span></p>
+      `);
+    });
+  </script>
+
+</body>
+</html>
