@@ -22,9 +22,6 @@ Users can enter details about their clinic operations (like number of locations,
 - Total hard savings (matches client Excel logic)
 - Total estimated annual savings
 
-## How to Run
-
-Just open `index.html` in your browser. No installation or setup needed.
 
 If GitHub Pages is enabled, you can view the live version [here](https://srishtiraviprakash.github.io/attenteo-roi-calculator).
 
